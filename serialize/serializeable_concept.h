@@ -49,7 +49,7 @@ namespace serializer{
 			bin.resize(sizeof(t::size_type) + size * sizeof(t::value_type));
 
 			std::memcpy(bin.data(), &size, sizeof(t::size_type));
-			std::memcpy(&bin.data()[sizeof(t::size_type)], a.data(), size * sizeof(t::value_type));
+			std::memcpy(&bin.at(sizeof(t::size_type)), a.data(), size * sizeof(t::value_type));
 
 			return bin;
 		}
@@ -60,7 +60,7 @@ namespace serializer{
 
 			t::size_type size = *(t::size_type*)bin.data();
 			a.resize(size);
-			std::memcpy(a.data(), &bin.data()[sizeof(t::size_type)], size);
+			std::memcpy(a.data(), &bin.at(sizeof(t::size_type)), size);
 		}
 
 		/// <summary>

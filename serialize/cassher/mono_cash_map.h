@@ -123,7 +123,7 @@ namespace serializer {
 			size_t pair_count = 0;
 			{
 				serialize_traits<size_t> pair_count_traits;
-				offset += pair_count_traits.store(pair_count, &bin.data()[offset]);
+				offset += pair_count_traits.store(pair_count, &bin.at(offset));
 			}
 
 			std::vector<typename t::key_type> keys(pair_count);
@@ -133,7 +133,7 @@ namespace serializer {
 
 				for (size_t i = 0; i < pair_count; i++)
 				{
-					offset += key_traits.store(keys[i], &bin[offset]);
+					offset += key_traits.store(keys[i], &bin.at(offset));
 				}
 			}
 
@@ -146,7 +146,7 @@ namespace serializer {
 
 				for (size_t i = 0; i < pair_count; i++)
 				{
-					offset += id_traits.store(ids[i], &bin[offset]);
+					offset += id_traits.store(ids[i], &bin.at(offset));
 				}
 			}
 
