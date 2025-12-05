@@ -78,7 +78,7 @@ namespace serializer {
 	//‚Ç‚¤‚¹g‚¤êŠ‚ÍŒÀ‚é‚Ì‚Åinline
 	template<typename key_t, typename val_t, typename lit_t>
 	struct serialize_traits<cassher::mono_cash_map<key_t, val_t, lit_t>> {
-		using t = cassher::mono_cash_map<key_t, val_t>;
+		using t = cassher::mono_cash_map<key_t, val_t,lit_t>;
 
 		inline std::vector<std::uint8_t> operator()(const t& a) const {
 

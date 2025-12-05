@@ -21,26 +21,14 @@ struct custom_literate {
 		cout << obj << " w: " << path << endl;
 	}
 };
-
-template<typename t, serializer::is_literate<t> = serializer::default_literate<t>>
-void fun() {
-	cout << "true" << endl;
-}
-
-template <typename t,typename u>
-void fun() {
-	cout << "false" << endl;
-}
-
 int main() {
 	using namespace std;
 	using namespace serializer::cassher;
 	using namespace serializer;
 
-	fun<int,custom_literate<int>>();
 
 	mono_cash_map<std::string, int,custom_literate<int>> cash_map;
-	//hold_object<mono_cash_map<std::string, int>> cash_holder(cash_map);
+	hold_object<mono_cash_map<std::string, int,custom_literate<int>>> cash_holder(cash_map);
 	
 
 	for (size_t i = 0; i < 10; i++)
