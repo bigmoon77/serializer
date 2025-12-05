@@ -10,7 +10,7 @@ namespace serializer {
 		/// もしくはcashと複数の変数をlinkする為の仲介
 		/// メモリライフタイムでキャッシュとの接続を保証する
 		/// </summary>
-		template<typename t,typename u>
+		template<typename t,is_literate<t> u = default_literate<t>>
 		class cash_guard {
 			mono_cash<t,u>*_cash;
 		public:

@@ -39,28 +39,29 @@ namespace serializer{
 	/// <summary>
 	/// string—á
 	/// </summary>
-	template<>
-	struct serialize_traits<std::string> {
-		using t = std::string;
+	template<typename elem_t, typename traits_t, typename alloc_t>
+	struct serialize_traits<std::basic_string<elem_t, traits_t, alloc_t>> {
+		using t = std::basic_string<elem_t, traits_t, alloc_t>;
+
 		inline std::vector<std::uint8_t> operator()(const t& a)const {
 			std::vector<std::uint8_t> bin;
 			auto size = a.size();
 
-			bin.resize(sizeof(t::size_type) + size * sizeof(t::value_type));
+			bin.resize(sizeof(typename t::size_type) + size * sizeof(typename t::value_type));
 
 			std::memcpy(bin.data(), &size, sizeof(t::size_type));
-			std::memcpy(&bin.at(sizeof(t::size_type)), a.data(), size * sizeof(t::value_type));
+			std::memcpy(&bin.data()[sizeof(typename t::size_type)], a.data(), size * sizeof(typename t::value_type));
 
 			return bin;
 		}
 
 		inline void store(t& a, const std::vector<std::uint8_t>& bin)const {
-			if (bin.size() <= sizeof(t::size_type))//•¶Žš—ñ‚ª‹ó
+			if (bin.size() <= sizeof(typename t::size_type))//•¶Žš—ñ‚ª‹ó
 				return;
 
-			t::size_type size = *(t::size_type*)bin.data();
+			typename t::size_type size = *(typename t::size_type*)bin.data();
 			a.resize(size);
-			std::memcpy(a.data(), &bin.at(sizeof(t::size_type)), size);
+			std::memcpy(a.data(), &bin.data()[sizeof(typename t::size_type)], size);
 		}
 
 		/// <summary>
@@ -71,11 +72,11 @@ namespace serializer{
 		/// <returns></returns>
 		inline size_t store(t& a, const std::uint8_t* bin)const {
 
-			t::size_type size = *(t::size_type*)bin;
+			typename t::size_type size = *(typename t::size_type*)bin;
 			a.resize(size);
-			std::memcpy(a.data(), &bin[sizeof(t::size_type)], size);
+			std::memcpy(a.data(), &bin[sizeof(typename t::size_type)], size);
 
-			return sizeof(t::size_type) + size;
+			return sizeof(typename t::size_type) + size;
 		}
 	};
 
@@ -111,7 +112,7 @@ namespace serializer{
 
 	template<typename t>
 	inline void default_reader(t& obj, const std::filesystem::path& path) {
-		std::ifstream bin_stream(path);
+		std::ifstream bin_stream(path, std::ios::binary);
 
 		if (!bin_stream.is_open())//failed
 			return;
@@ -142,7 +143,7 @@ namespace serializer{
 
 		auto&& bin = traits(obj);
 
-		std::ofstream bin_stream(path);
+		std::ofstream bin_stream(path,std::ios::binary);
 
 		bin_stream.write((char*)bin.data(), bin.size());
 	}
