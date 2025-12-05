@@ -23,15 +23,16 @@ namespace serializer {
 		/// </summary>
 		/// <typeparam name="key_type_"></typeparam>
 		/// <typeparam name="value_type_"></typeparam>
-		template<typename key_type_, typename value_type_>
+		template<typename key_type_, typename value_type_, is_literate<value_type_> literate_type_ = default_literate<value_type_>>
 		class mono_cash_map {
-			std::unordered_map<key_type_, mono_cash<value_type_>> _map;
+			std::unordered_map<key_type_, mono_cash<value_type_, literate_type_>> _map;
 			size_t _id_counter = 0;
 
-			friend struct serializer::serialize_traits<mono_cash_map<key_type_, value_type_>>;
+			friend struct serializer::serialize_traits<mono_cash_map<key_type_, value_type_, literate_type_>>;
 		public:
 			using key_type = key_type_;
 			using value_type = value_type_;
+			using literate_type = literate_type_;
 
 			mono_cash_map() = default;
 			~mono_cash_map() = default;
@@ -50,8 +51,8 @@ namespace serializer {
 			/// キャッシュを定義すると 変数とlink出来るようになる
 			/// </summary>
 			/// <param name="key"></param>
-			void register_cash(const key_type& key) {
-				_map.emplace(key, _id_counter);
+			void register_cash(const key_type& key, const literate_type& literate = literate_type()) {
+				_map.emplace(key, mono_cash<value_type,literate_type>(_id_counter, literate));
 				_id_counter++;
 			}
 
@@ -63,7 +64,7 @@ namespace serializer {
 			/// <param name="key"></param>
 			/// <param name="obj"></param>
 			/// <returns></returns>
-			cash_guard<value_type> link(const key_type& key, value_type& obj) {
+			cash_guard<value_type,literate_type> link(const key_type& key, value_type& obj) {
 				auto& cash = _map.at(key);
 				cash.catch_object(obj);
 				return cash_guard(&cash);
@@ -73,10 +74,10 @@ namespace serializer {
 
 	};
 
-	//以下loader
+	//以下serializer
 	//どうせ使う場所は限るのでinline
-	template<typename key_t, typename val_t>
-	struct serialize_traits<cassher::mono_cash_map<key_t, val_t>> {
+	template<typename key_t, typename val_t, typename lit_t>
+	struct serialize_traits<cassher::mono_cash_map<key_t, val_t, lit_t>> {
 		using t = cassher::mono_cash_map<key_t, val_t>;
 
 		inline std::vector<std::uint8_t> operator()(const t& a) const {
@@ -155,7 +156,11 @@ namespace serializer {
 			{
 				a._map.emplace(
 					std::move(keys[i]),
-					std::move(ids[i])
+					
+					cassher::mono_cash<t::value_type,t::literate_type>(
+					std::move(ids[i]),
+					t::literate_type()
+					)
 				);
 			}
 

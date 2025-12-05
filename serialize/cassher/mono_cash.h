@@ -16,12 +16,13 @@ namespace serializer {
 		/// 任意のタイミングでキャッシュとのデータリンク、切断を行う 
 		/// </summary>
 		/// <typeparam name="obj_type"></typeparam>
-		template<typename obj_type>
+		template<typename obj_type,is_literate<obj_type> literate_type = default_literate<obj_type>>
 		class mono_cash {
 
-			std::unique_ptr<hold_object<obj_type>> _holder;//lifetime
+			std::unique_ptr<hold_object<obj_type,literate_type>> _holder;//lifetime
 			obj_type* _obj = nullptr;
 			std::source_location _loc;
+			literate_type _literate;
 
 		public:
 			using id_type = size_t;
@@ -30,11 +31,18 @@ namespace serializer {
 			id_type _id;
 		public:
 
-			mono_cash(id_type id)
-				:_id(id)
+			mono_cash(id_type id , const literate_type& literate = literate_type())
+				:_id(id),_literate(literate)
 			{
 				_loc = std::source_location::current();
 			}
+
+			mono_cash(mono_cash&& other)
+				:_id(other._id), _literate(std::move(other._literate)), _loc(std::move(other._loc)), _obj(other._obj)
+			{
+				other._obj = nullptr;
+			}
+
 			~mono_cash() {
 				if (_obj)
 					release_object();
@@ -81,7 +89,9 @@ namespace serializer {
 				if (!_obj)
 					throw error::located_exception("bad pointer");
 
-				_holder.reset(new hold_object<obj_type>(*_obj,
+				_holder.reset(new hold_object<obj_type,literate_type>(
+					*_obj,
+					_literate,
 					_loc,
 					std::to_string(_id))
 				);

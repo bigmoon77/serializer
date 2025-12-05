@@ -10,9 +10,9 @@ namespace serializer {
 		/// もしくはcashと複数の変数をlinkする為の仲介
 		/// メモリライフタイムでキャッシュとの接続を保証する
 		/// </summary>
-		template<typename t>
+		template<typename t,typename u>
 		class cash_guard {
-			mono_cash<t>* _cash;
+			mono_cash<t,u>*_cash;
 		public:
 
 			cash_guard()
@@ -20,7 +20,7 @@ namespace serializer {
 
 			}
 
-			cash_guard(mono_cash<t>* cash)
+			cash_guard(mono_cash<t, u>* cash)
 				:_cash(cash) {
 
 			}

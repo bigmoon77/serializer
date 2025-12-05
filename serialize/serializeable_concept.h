@@ -89,4 +89,72 @@ namespace serializer{
 		serialize_traits<t>().store(a, std::vector<std::uint8_t>());
 	};
 
+
+
+	/*
+	
+	ÀÛ‚É“Ç‚İ‘‚«‚ğs‚¤ˆ×‚Ìconcepts
+	
+	*/
+	template<typename writer_type, typename obj_type>
+	concept is_writer = requires(const writer_type& writer, const obj_type& obj, const std::filesystem::path & path) {
+		writer.write(obj, path);
+	};
+
+	template<typename reader_type, typename obj_type>
+	concept is_reader = requires(const reader_type& reader, obj_type & obj, const std::filesystem::path & path) {
+		reader.read(obj, path);
+	};
+
+	template<typename literate_type, typename obj_type>
+	concept is_literate = is_reader<literate_type, obj_type>&& is_writer<literate_type, obj_type>;
+
+	template<typename t>
+	inline void default_reader(t& obj, const std::filesystem::path& path) {
+		std::ifstream bin_stream(path);
+
+		if (!bin_stream.is_open())//failed
+			return;
+
+		std::vector<std::uint8_t> bin;
+
+		constexpr size_t buffer_size = 128;
+
+		std::uint8_t buffer[buffer_size];
+		size_t current = 0;
+
+		while (!bin_stream.eof())
+		{
+			bin_stream.read((char*)&buffer[current], buffer_size);
+
+			current += bin_stream.gcount();
+			bin.resize(current);
+			std::memcpy(&bin.data()[current - bin_stream.gcount()], buffer, bin_stream.gcount());
+		}
+
+		serializer::serialize_traits<t> traits;
+		traits.store(obj, bin);
+	}
+
+	template<typename t>
+	inline void default_writer(const t& obj, const std::filesystem::path& path) {
+		serializer::serialize_traits<t> traits;
+
+		auto&& bin = traits(obj);
+
+		std::ofstream bin_stream(path);
+
+		bin_stream.write((char*)bin.data(), bin.size());
+	}
+
+
+	template<typename t>
+	struct default_literate {
+		inline void write(const t& obj, const std::filesystem::path& path) const {
+			default_writer<t>(obj, path);
+		}
+		inline void read(t& obj, const std::filesystem::path& path) const {
+			default_reader<t>(obj, path);
+		}
+	};
 }
