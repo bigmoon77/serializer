@@ -27,8 +27,8 @@ int main() {
 	using namespace serializer;
 
 
-	mono_cash_map<std::wstring, int> cash_map;
-	hold_object<mono_cash_map<std::wstring, int>> cash_holder(cash_map);
+	mono_cash_map<std::wstring, int,custom_literate<int>> cash_map;
+	hold_object<mono_cash_map<std::wstring, int, custom_literate<int>>> cash_holder(cash_map);
 	
 
 	for (size_t i = 0; i < 10; i++)
@@ -38,7 +38,7 @@ int main() {
 		}
 		int tmp = 0;
 
-		cash_guard<int> guard;
+		cash_guard<int, custom_literate<int>> guard;
 		guard = cash_map.link(L"hoge", tmp);
 
 		cout << tmp << endl;

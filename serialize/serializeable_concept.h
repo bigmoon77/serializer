@@ -49,7 +49,9 @@ namespace serializer{
 
 			bin.resize(sizeof(typename t::size_type) + size * sizeof(typename t::value_type));
 
-			std::memcpy(bin.data(), &size, sizeof(t::size_type));
+			//書き込むのは文字数.
+			//文字サイズに復元する必要がある.
+			std::memcpy(bin.data(), &size, sizeof(typename t::size_type));
 			std::memcpy(&bin.data()[sizeof(typename t::size_type)], a.data(), size * sizeof(typename t::value_type));
 
 			return bin;
@@ -61,7 +63,7 @@ namespace serializer{
 
 			typename t::size_type size = *(typename t::size_type*)bin.data();
 			a.resize(size);
-			std::memcpy(a.data(), &bin.data()[sizeof(typename t::size_type)], size);
+			std::memcpy(a.data(), &bin.data()[sizeof(typename t::size_type)], size * sizeof(typename t::value_type));
 		}
 
 		/// <summary>
@@ -71,12 +73,12 @@ namespace serializer{
 		/// <param name="bin"></param>
 		/// <returns></returns>
 		inline size_t store(t& a, const std::uint8_t* bin)const {
-
 			typename t::size_type size = *(typename t::size_type*)bin;
-			a.resize(size);
-			std::memcpy(a.data(), &bin[sizeof(typename t::size_type)], size);
 
-			return sizeof(typename t::size_type) + size;
+			a.resize(size);
+			std::memcpy(a.data(), &bin[sizeof(typename t::size_type)], size * sizeof(typename t::value_type));
+
+			return sizeof(typename t::size_type) + size * sizeof(typename t::value_type);
 		}
 	};
 

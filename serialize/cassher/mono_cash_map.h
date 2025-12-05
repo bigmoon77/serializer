@@ -52,6 +52,7 @@ namespace serializer {
 			/// </summary>
 			/// <param name="key"></param>
 			void register_cash(const key_type& key, const literate_type& literate = literate_type()) {
+
 				_map.emplace(key, mono_cash<value_type,literate_type>(_id_counter, literate));
 				_id_counter++;
 			}
