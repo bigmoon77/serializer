@@ -12,11 +12,23 @@ namespace serializer{
 
 	template<serialized t>
 	struct serialize_traits<t> {
+		
+		/// <summary>
+		/// オブジェクトをビット列に変換する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <returns></returns>
 		inline std::vector<std::uint8_t> operator()(const t& a) const {
 			std::vector <std::uint8_t> res(sizeof(t));
 			std::memcpy(res.data(), &a, sizeof(t));
 			return res;
 		}
+
+		/// <summary>
+		/// ビット列からオブジェクトを初期化する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="bin"></param>
 		inline void store(t& a, const std::vector<std::uint8_t>& bin)const {
 			if (sizeof(t) > bin.size())
 				throw std::runtime_error("no match type");
@@ -24,6 +36,7 @@ namespace serializer{
 		}
 
 		/// <summary>
+		/// ビット列からオブジェクトを初期化する
 		/// return of loaded bytes
 		/// </summary>
 		/// <param name="a"></param>
@@ -112,6 +125,7 @@ namespace serializer{
 	template<typename literate_type, typename obj_type>
 	concept is_literate = is_reader<literate_type, obj_type>&& is_writer<literate_type, obj_type>;
 
+
 	template<typename t>
 	inline void default_reader(t& obj, const std::filesystem::path& path) {
 		std::ifstream bin_stream(path, std::ios::binary);
@@ -128,7 +142,7 @@ namespace serializer{
 
 		while (!bin_stream.eof())
 		{
-			bin_stream.read((char*)&buffer[current], buffer_size);
+			bin_stream.read((char*)buffer, buffer_size);
 
 			current += bin_stream.gcount();
 			bin.resize(current);
@@ -138,6 +152,7 @@ namespace serializer{
 		serializer::serialize_traits<t> traits;
 		traits.store(obj, bin);
 	}
+
 
 	template<typename t>
 	inline void default_writer(const t& obj, const std::filesystem::path& path) {

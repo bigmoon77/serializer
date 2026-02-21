@@ -9,7 +9,13 @@ namespace serializer {
 
 
 
-
+	/// <summary>
+	/// linkするファイルは自動生成される　パスは変数のソース位置依存
+	/// 構築時、linkしているファイルが存在していれば変数にフィードバックする
+	/// スコープが切れた時、現在値をファイルにフィードバックする
+	/// </summary>
+	/// <typeparam name="t"></typeparam>
+	/// <typeparam name="u"></typeparam>
 	template<serializer::serializeable t, is_literate<t> u = default_literate<t>>
 	class hold_object {
 		std::filesystem::path _hold_location;
