@@ -32,5 +32,8 @@
     <ClInclude Include="serialize\error\located_exception.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="serialize\mono_resource_map.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

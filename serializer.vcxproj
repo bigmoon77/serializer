@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClInclude Include="serialize\error\located_exception.h" />
     <ClInclude Include="serialize\hold_object.h" />
+    <ClInclude Include="serialize\mono_resource_map.h" />
     <ClInclude Include="serialize\serializeable_concept.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
