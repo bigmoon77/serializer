@@ -133,9 +133,6 @@
     <ClCompile Include="serialize\error\located_exception.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="serialize\cassher\cash_guard.h" />
-    <ClInclude Include="serialize\cassher\mono_cash_map.h" />
-    <ClInclude Include="serialize\cassher\mono_cash.h" />
     <ClInclude Include="serialize\error\located_exception.h" />
     <ClInclude Include="serialize\hold_object.h" />
     <ClInclude Include="serialize\serializeable_concept.h" />

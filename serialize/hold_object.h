@@ -7,8 +7,6 @@
 
 namespace serializer {
 
-
-
 	/// <summary>
 	/// linkするファイルは自動生成される　パスは変数のソース位置依存
 	/// 構築時、linkしているファイルが存在していれば変数にフィードバックする
@@ -22,6 +20,8 @@ namespace serializer {
 		t& _obj;
 		u _literate;
 	public:
+		using value_type = t;
+		using literate_type = u;
 
 		hold_object(t& obj,const u& literate = u(), const std::source_location& location = std::source_location::current())
 			:_obj(obj), _literate(literate)
@@ -32,8 +32,12 @@ namespace serializer {
 				size_t line = location.line();
 				size_t column = location.column();
 
+				//ソース位置からpathを生成
 				auto str = std::format<size_t>("hold_object\\{}_{}", std::move(dir), std::move(fun));
 
+				//生成したpathにファイルの存在を確認し、
+				//あればキャッシュとして読み取り適用
+				//無ければ破棄時に生成し、破棄時点でのデータを書き込む
 				if (!std::filesystem::exists(str)) {
 					std::filesystem::create_directories(str);
 				}
